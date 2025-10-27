@@ -7,10 +7,12 @@ const router = Router();
 router.get("/", BruxosController.listarTodos);
 //rota getbyid em /
 router.get("/:id", BruxosController.listarUm);
-//rota post
+//Rota Create
 router.post("/", BruxosController.criar)
 //Rota delete
 router.delete("/:id", BruxosController.apagar)
+//Rota update
+router.put("/:id", BruxosController.atualizar)
 
 
 export default router

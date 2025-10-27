@@ -1,11 +1,11 @@
 //aqui vai logica tratativa de erros e regras de negocio
 
 //importa model
-import * as bruxoModel from '../models/bruxoModel.js'
+import * as BruxoModel from '../models/bruxoModel.js'
 
 export const listarTodos = async(req, res) => {
     try {
-        const bruxos = await bruxoModel.findAll();
+        const bruxos = await BruxoModel.findAll();
 
         if(!bruxos || bruxos.length === 0) {
             res.status(404).json({
@@ -33,7 +33,7 @@ export const listarTodos = async(req, res) => {
 export const listarUm = async (req, res) => {
     try{
         const {id} = req.params;
-        const bruxo = await bruxoModel.findByid(id);
+        const bruxo = await BruxoModel.findByid(id);
 
         if(!bruxo){
             return res.status(404).json({
@@ -102,7 +102,7 @@ export const apagar = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
 
-        const bruxoExiste = await BruxoModel.findById(id);
+        const bruxoExiste = await BruxoModel.findByid(id);
 
         if (!bruxoExiste) {
             return res.status(404).json({
@@ -126,3 +126,43 @@ export const apagar = async (req, res) => {
     }
 }
 
+export const atualizar = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const dados = req.body;
+
+        const bruxoExiste = await BruxoModel.findByid(id);
+
+        if (!bruxoExiste) {
+            return res.status(404).json({
+                erro: 'Bruxo não encontrado com esse id',
+                id: id
+            })
+        }
+
+        if (dados.casa) {
+            const casasValidas = ['Grifinória', 'Sonserina', 'Corvinal', 'Lufa-Lufa'];
+            if (!casasValidas.includes(dados.casa)) {
+                return res.status(400).json({
+                    erro: 'Casa inválida!',
+                    casasValidas
+                })
+            }
+        }
+        //Verificar se a casa que esta sendo editada, existe!
+
+
+        const bruxoAtualizado = await BruxoModel.update(id, dados);
+
+        res.status(200).json({
+            mensagem: 'Bruxo atualizado com sucesso',
+            bruxo: bruxoAtualizado
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro ao atualizar bruxos',
+            detalhes: error.message
+        })
+    }
+}
